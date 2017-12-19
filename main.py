@@ -5,7 +5,7 @@ import cvxpy as cvx
 from Queue import Queue
 from Deliveryman import Deliveryman
 from Request import Request
-from data import deliverymen, store_positions, x_bound, y_bound, a_r
+from data import deliverymen, store_positions, x_bound, y_bound, a_r, n_r, run_lp
 from collections import deque
 import matplotlib.animation as animation
 from lp_solver import solve_min_cost
@@ -22,7 +22,7 @@ def plot_static(data):
     plt.show()
 
 def generate_request(t, always_create=False):
-    if np.random.rand() < 1/100.0 or always_create:
+    if np.random.rand() < a_r or always_create:
         request = Request(random_position(), t, store_positions[np.random.randint(0, len(store_positions)-1)])
         return request
     return None        
@@ -64,7 +64,7 @@ def closest(free_deliverymen, store_pos): # todo
             min_deliveryman = d
     return d
 
-def assign(t, lp=False):
+def assign(t, lp=True):
     global unassigned_requests, free_deliverymen, batch_time, batch_itr
     if lp:
         batch_itr += 1
@@ -82,7 +82,6 @@ def assign(t, lp=False):
 def step(t, scat, scat1, scat2):
     global unassigned_requests, incomplete_requests, all_requests, free_deliverymen, busy_deliverymen, all_deliverymen
     r = generate_request(t)
-    print(t)
     if r: 
         unassigned_requests.append(r)
         incomplete_requests.append(r)
@@ -98,7 +97,7 @@ def step(t, scat, scat1, scat2):
             incomplete_requests.remove(r)
 
     if len(unassigned_requests) > 0 and len(deliverymen) > 0:
-        assign(t, lp=True)
+        assign(t, lp=run_lp)
 
     for d in busy_deliverymen:
         d.move(t)
@@ -117,7 +116,7 @@ def init_requests(n):
         unassigned_requests.append(r)
         incomplete_requests.append(r)
 
-t = 1 * 30 * 60 # 4 hours in seconds
+t = 1 * 60 * 60  # 4 hours in seconds
 batch_time = 10
 batch_itr = 0
 
@@ -129,7 +128,7 @@ busy_deliverymen = []
 free_deliverymen = deliverymen
 all_deliverymen = [d for d in deliverymen]
 
-init_requests(5)
+init_requests(n_r)
 deliveyrmen_positions = [d.pos for d in deliverymen]
 fig = plt.figure()
 im = plt.imread("map.png")

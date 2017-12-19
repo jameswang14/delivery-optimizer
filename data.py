@@ -5,10 +5,12 @@ x_bound = (-122.460281, -122.400213)
 y_bound = (37.749058, 37.802265)
 # bounding box (cw from northwest): (37.756720, -122.445502), (37.808680, -122.409081)
 np.random.seed(0)
-num_deliverymen = 150
-a_r = 5.0
-num_stores = 20
+num_deliverymen = 50
+a_r = 1/20.0
+n_r = 15
+num_stores = 10
 num_requests = 20
+run_lp = True
 
 delivery_positions = zip( ((x_bound[1] - x_bound[0]) * np.random.ranf(num_deliverymen) + x_bound[0] ),
                             ((y_bound[1] - y_bound[0]) * np.random.ranf(num_deliverymen) + y_bound[0] ))
